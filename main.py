@@ -14,15 +14,13 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     f1_score,
-    classification_report,
     roc_auc_score,
-    roc_curve,
     confusion_matrix
 )
 
-# =====================================================
+# ---------------------------------------------------
 # PAGE CONFIG
-# =====================================================
+# ---------------------------------------------------
 
 st.set_page_config(
     page_title="Fake Social Media Account Detection",
@@ -30,9 +28,9 @@ st.set_page_config(
     layout="wide"
 )
 
-# =====================================================
-# CUSTOM CSS
-# =====================================================
+# ---------------------------------------------------
+# CSS
+# ---------------------------------------------------
 
 st.markdown("""
 <style>
@@ -54,18 +52,8 @@ st.markdown("""
     font-size:18px;
 }
 
-.metric{
-    background:#262730;
-    padding:15px;
-    border-radius:10px;
-}
-
 </style>
 """, unsafe_allow_html=True)
-
-# =====================================================
-# TITLE
-# =====================================================
 
 st.markdown(
     '<p class="title">Fake Social Media Account Detection</p>',
@@ -79,49 +67,31 @@ st.markdown(
 
 st.divider()
 
-# =====================================================
+# ---------------------------------------------------
 # LOAD DATASET
-# =====================================================
+# ---------------------------------------------------
 
 df = pd.read_csv("fake_social_media.csv")
 
-# =====================================================
-# DATASET
-# =====================================================
-
-st.header("Dataset Preview")
-
-st.dataframe(df.head(10), use_container_width=True)
-
-# =====================================================
+# ---------------------------------------------------
 # DATASET INFORMATION
-# =====================================================
+# ---------------------------------------------------
 
 st.header("Dataset Information")
 
 col1, col2 = st.columns(2)
 
 with col1:
-
     st.info(f"Rows : {df.shape[0]}")
     st.info(f"Columns : {df.shape[1]}")
 
 with col2:
-
     st.info(f"Missing Values : {df.isnull().sum().sum()}")
     st.info(f"Duplicate Rows : {df.duplicated().sum()}")
 
-# =====================================================
-# DATA TYPES
-# =====================================================
-
-st.header("Column Data Types")
-
-st.dataframe(df.dtypes.astype(str))
-
-# =====================================================
-# ENCODING
-# =====================================================
+# ---------------------------------------------------
+# DATA PREPROCESSING
+# ---------------------------------------------------
 
 st.header("Data Preprocessing")
 
@@ -129,19 +99,15 @@ label_encoder = LabelEncoder()
 
 df["platform"] = label_encoder.fit_transform(df["platform"])
 
-st.success("Platform column encoded successfully")
-
-# =====================================================
-# FEATURES
-# =====================================================
+st.success("Platform column encoded successfully.")
 
 X = df.drop("is_fake", axis=1)
 
 y = df["is_fake"]
 
-# =====================================================
+# ---------------------------------------------------
 # TRAIN TEST SPLIT
-# =====================================================
+# ---------------------------------------------------
 
 X_train, X_test, y_train, y_test = train_test_split(
     X,
@@ -151,16 +117,16 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify=y
 )
 
-st.success("Train-Test Split Completed")
+st.success("Train Test Split Completed")
 
 st.write("Training Samples :", X_train.shape[0])
 st.write("Testing Samples :", X_test.shape[0])
 
-# =====================================================
-# RANDOM FOREST
-# =====================================================
+# ---------------------------------------------------
+# RANDOM FOREST MODEL
+# ---------------------------------------------------
 
-st.header("Training Random Forest Model")
+st.header("Random Forest Model Training")
 
 model = RandomForestClassifier(
     n_estimators=200,
@@ -172,17 +138,17 @@ model.fit(X_train, y_train)
 
 st.success("Model Trained Successfully")
 
-# =====================================================
+# ---------------------------------------------------
 # PREDICTION
-# =====================================================
+# ---------------------------------------------------
 
 y_pred = model.predict(X_test)
 
-y_prob = model.predict_proba(X_test)[:,1]
+y_prob = model.predict_proba(X_test)[:, 1]
 
-# =====================================================
-# EVALUATION
-# =====================================================
+# ---------------------------------------------------
+# MODEL METRICS
+# ---------------------------------------------------
 
 accuracy = accuracy_score(y_test, y_pred)
 
@@ -194,9 +160,9 @@ f1 = f1_score(y_test, y_pred)
 
 auc = roc_auc_score(y_test, y_prob)
 
-# =====================================================
-# METRICS
-# =====================================================
+# ---------------------------------------------------
+# DISPLAY METRICS
+# ---------------------------------------------------
 
 st.header("Model Performance")
 
@@ -212,168 +178,105 @@ c4.metric("F1 Score", f"{f1*100:.2f}%")
 
 c5.metric("AUC Score", f"{auc:.3f}")
 
-# =====================================================
-# CLASSIFICATION REPORT
-# =====================================================
-
-st.header("Classification Report")
-
-report = classification_report(
-    y_test,
-    y_pred,
-    output_dict=True
-)
-
-report_df = pd.DataFrame(report).transpose()
-
-st.dataframe(report_df)
-
-# =====================================================
+# ---------------------------------------------------
 # SAVE VARIABLES
-# =====================================================
+# ---------------------------------------------------
 
 cm = confusion_matrix(y_test, y_pred)
-
-fpr, tpr, thresholds = roc_curve(y_test, y_prob)
 
 importance = model.feature_importances_
 
 feature_importance = pd.DataFrame({
-    "Feature":X.columns,
-    "Importance":importance
+    "Feature": X.columns,
+    "Importance": importance
 }).sort_values(
     by="Importance",
     ascending=False
 )
 
-st.success("Part 1 & Part 2 Completed Successfully.")
-
-# ============================================================
-# PART 3
+# ==========================================================
+# PART 2
 # VISUALIZATION
-# ============================================================
+# ==========================================================
 
 st.divider()
+
 st.header("Model Verification")
 
-# ===========================
+# ---------------------------------------------------
 # CONFUSION MATRIX
-# ===========================
-
+# ---------------------------------------------------
 st.subheader("Confusion Matrix")
 
-fig, ax = plt.subplots(figsize=(6,5))
+col1, col2, col3 = st.columns([2,3,2])
 
-sns.heatmap(
-    cm,
-    annot=True,
-    fmt="d",
-    cmap="Blues",
-    xticklabels=["Real","Fake"],
-    yticklabels=["Real","Fake"]
-)
+with col2:
+    fig, ax = plt.subplots(figsize=(2.5,2))
 
-plt.xlabel("Predicted")
-plt.ylabel("Actual")
-plt.title("Confusion Matrix")
+    sns.heatmap(
+        cm,
+        annot=True,
+        fmt="d",
+        cmap="Blues",
+        cbar=False,
+        annot_kws={"size":7},
+        xticklabels=["Real","Fake"],
+        yticklabels=["Real","Fake"],
+        ax=ax
+    )
 
-st.pyplot(fig)
+    ax.tick_params(labelsize=7)
 
-# ===========================
-# ROC CURVE
-# ===========================
-
-st.subheader("ROC Curve")
-
-fig, ax = plt.subplots(figsize=(7,5))
-
-plt.plot(
-    fpr,
-    tpr,
-    color="blue",
-    linewidth=3,
-    label=f"AUC = {auc:.3f}"
-)
-
-plt.plot(
-    [0,1],
-    [0,1],
-    linestyle="--",
-    color="red"
-)
-
-plt.xlabel("False Positive Rate")
-plt.ylabel("True Positive Rate")
-plt.title("ROC Curve")
-
-plt.legend()
-
-st.pyplot(fig)
-
-# ===========================
+    st.pyplot(fig, use_container_width=False)
+# ---------------------------------------------------
 # FEATURE IMPORTANCE
-# ===========================
+# ---------------------------------------------------
 
 st.subheader("Feature Importance")
 
-fig, ax = plt.subplots(figsize=(10,6))
+col1, col2, col3 = st.columns([1,4,1])
 
-sns.barplot(
-    data=feature_importance,
-    x="Importance",
-    y="Feature",
-    palette="viridis"
-)
+with col2:
+    fig, ax = plt.subplots(figsize=(4,2.5))
 
-plt.title("Feature Importance")
+    sns.barplot(
+        data=feature_importance,
+        x="Importance",
+        y="Feature",
+        palette="viridis",
+        ax=ax
+    )
 
-st.pyplot(fig)
+    ax.tick_params(axis='x', labelsize=6)
+    ax.tick_params(axis='y', labelsize=6)
 
-# ===========================
-# CORRELATION MATRIX
-# ===========================
+    plt.tight_layout()
 
-st.subheader("Correlation Heatmap")
-
-fig, ax = plt.subplots(figsize=(12,8))
-
-sns.heatmap(
-    df.corr(numeric_only=True),
-    cmap="coolwarm",
-    annot=False
-)
-
-plt.title("Correlation Matrix")
-
-st.pyplot(fig)
-
-# ===========================
-# CLASS DISTRIBUTION
-# ===========================
-
+    st.pyplot(fig, use_container_width=False)
+# ---------------------------------------------------
+# PIE CHART
+# ---------------------------------------------------
 st.subheader("Fake vs Real Accounts")
 
 count = df["is_fake"].value_counts()
 
-fig, ax = plt.subplots(figsize=(5,5))
+col1, col2, col3 = st.columns([2,2,2])
 
-plt.pie(
-    count,
-    labels=["Real","Fake"],
-    autopct="%1.1f%%",
-    colors=["skyblue","red"],
-    startangle=90
-)
+with col2:
+    fig, ax = plt.subplots(figsize=(2.5,2.5))
 
-plt.title("Account Distribution")
+    ax.pie(
+        count,
+        labels=["Real","Fake"],
+        autopct="%1.1f%%",
+        textprops={"fontsize":6}
+    )
 
-st.pyplot(fig)
+    st.pyplot(fig, use_container_width=False)
 
-
-# ============================================================
-# PART 4
+# ==========================================================
 # PREDICT NEW ACCOUNT
-# ============================================================
+# ==========================================================
 
 st.divider()
 
@@ -480,8 +383,7 @@ verified = st.selectbox(
 
 if st.button("Predict"):
 
-    sample = np.array([[
-
+    sample = pd.DataFrame([[
         platform,
         has_profile_pic,
         bio_length,
@@ -499,23 +401,19 @@ if st.button("Predict"):
         generic_rate,
         links,
         verified
-
-    ]])
+    ]], columns=X.columns)
 
     prediction = model.predict(sample)[0]
 
     probability = model.predict_proba(sample)
 
-    confidence = np.max(probability)*100
+    confidence = np.max(probability) * 100
 
     st.divider()
 
     if prediction == 1:
-
         st.error("🚨 Fake Account Detected")
-
     else:
-
         st.success("✅ Genuine Account")
 
     st.metric(
@@ -523,17 +421,12 @@ if st.button("Predict"):
         f"{confidence:.2f}%"
     )
 
-    st.write("Prediction Probability")
-
     prob_df = pd.DataFrame({
-
-        "Class":["Real","Fake"],
-
-        "Probability":[
+        "Class": ["Real", "Fake"],
+        "Probability": [
             probability[0][0],
             probability[0][1]
         ]
-
     })
 
     fig, ax = plt.subplots(figsize=(5,4))
@@ -542,13 +435,14 @@ if st.button("Predict"):
         data=prob_df,
         x="Class",
         y="Probability",
-        palette=["green","red"]
+        palette=["green","red"],
+        ax=ax
     )
 
-    plt.ylim(0,1)
+    ax.set_ylim(0,1)
 
     st.pyplot(fig)
 
 st.divider()
 
-st.success("Fake Social Media Detection System Completed Successfully.")
+st.success("🎉 Fake Social Media Account Detection System Completed Successfully")
