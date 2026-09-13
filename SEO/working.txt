@@ -1,0 +1,135 @@
+How Google Search Basically Works
+
+You should understand these 3 words first:
+
+1.Crawling
+
+Google uses automated programs called crawlers to discover pages.
+
+Google
+   ↓
+Crawler
+   ↓
+Your website
+   ↓
+Reads pages
+2.Indexing
+
+Google stores information about your page in its index.
+
+Your page
+   ↓
+Google understands it
+   ↓
+Google Index
+3.Ranking
+
+When somebody searches, Google decides which pages should appear first.
+
+User searches
+      ↓
+Google
+      ↓
+Search results
+      ↓
+Rank #1
+Rank #2
+Rank #3
+...
+
+So:
+
+Crawl → Index → Rank
+
+This is one of the most important concepts in SEO.
+
+=================================================================================
+4.The 4 Major Parts of SEO
+
+You'll hear these terms constantly.
+
+🟢 On-Page SEO
+
+Things you control inside your website.
+
+Examples:
+
+Page title
+Meta description
+Headings
+Content
+Keywords
+Images
+Internal links
+URLs
+Structured data
+🔵 Technical SEO
+
+Things related to the technical structure of your website.
+
+Examples:
+
+Website speed
+Mobile friendliness
+HTTPS
+Sitemap
+robots.txt
+Canonical URLs
+Crawlability
+Core Web Vitals
+JavaScript rendering
+Proper redirects
+Server configuration
+
+This part will be particularly useful for you because you're working with Next.js/React/VPS/Nginx.
+
+🟠 Off-Page SEO
+
+Things happening outside your website.
+
+The biggest example:
+
+Backlinks
+
+Suppose:
+
+Website A
+   ↓
+links to
+   ↓
+Your website
+
+Google can treat that as a signal that your website is worth considering.
+
+But:
+
+Not all backlinks are good.
+
+10 high-quality relevant backlinks can be much more valuable than hundreds of spammy links.
+
+🟣 Local SEO
+
+Very important if you're building websites for local businesses.
+
+Example:
+
+"Best bakery in Madurai"
+
+or
+
+"Web developer in Coimbatore"
+
+Local SEO involves things such as:
+
+Google Business Profile
+Business information
+Location pages
+Reviews
+Local citations
+NAP consistency
+
+NAP means:
+
+Name + Address + Phone
+
+
