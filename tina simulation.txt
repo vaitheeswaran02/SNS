@@ -1,0 +1,3 @@
+ cd ~/Downloads/tina-4.0.0
+
+./bin/nd ~/Downloads/fake_account_detection.ndr
